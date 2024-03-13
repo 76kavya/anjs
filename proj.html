@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="locationApp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Location Information</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .video-background video {
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .container {
+        position: relative;
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        z-index: 1;
+        color: #fff;
+    }
+
+    .container h2 {
+        color: #fff;
+    }
+
+    .form-control {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .weather-info {
+        margin-top: 20px;
+    }
+
+    .weather-info h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .weather-info p {
+        margin-bottom: 10px;
+    }
+
+    .weather-info img {
+        max-width: 100%;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .weather-info img:hover {
+        transform: scale(1.1);
+    }
+
+    .alert-danger {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body ng-controller="locationCtrl">
+
+<div class="video-background">
+    <video autoplay muted loop>
+        <source src="video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="overlay"></div>
+</div>
+
+<div class="container mt-5">
+    <h2>Location Information</h2>
+    <input type="text" class="form-control mb-3" ng-model="locationInput" placeholder="Enter location">
+    <button class="btn btn-primary" ng-click="getLocationInfo()">Get Info</button>
+
+    <div class="weather-info mt-4" ng-show="weatherData">
+        <h2>Weather in {{ locationInput }}</h2>
+        <p>Temperature: {{ weatherData.main.temp }}°C</p>
+        <p>Description: {{ weatherData.weather[0].description }}</p>
+        <img ng-src="{{ photoUrl }}" alt="Photo of {{ locationInput }}">
+    </div>
+
+    <div class="alert alert-danger mt-4" ng-show="error">
+        {{ error }}
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+<script>
+    angular.module('locationApp', [])
+    .controller('locationCtrl', function($scope, $http) {
+        $scope.getLocationInfo = function() {
+            $http.get(`https://api.openweathermap.org/data/2.5/weather?q=${$scope.locationInput}&appid=cc105251ea3ff608f1b409a6d4da5822&units=metric`)
+            .then(function(response) {
+                $scope.weatherData = response.data;
+                return $http.get(`https://api.unsplash.com/photos/random?query=${$scope.locationInput}&client_id=YOUR_UNSPLASH_API_KEY`);
+            })
+            .then(function(response) {
+                $scope.photoUrl = response.data.urls.regular;
+            })
+            .catch(function(error) {
+                $scope.error = 'Error fetching data. Please try again.';
+                console.error('Error:', error);
+            });
+        };
+    });
+</script>
+</body>
+</html>
