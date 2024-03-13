@@ -129,10 +129,10 @@
             $http.get(`https://api.openweathermap.org/data/2.5/weather?q=${$scope.locationInput}&appid=cc105251ea3ff608f1b409a6d4da5822&units=metric`)
             .then(function(response) {
                 $scope.weatherData = response.data;
-                return $http.get(`https://api.unsplash.com/photos/random?query=${$scope.locationInput}&client_id=YOUR_UNSPLASH_API_KEY`);
+                return $http.get(`https://api.unsplash.com/photos/random?query=${$scope.locationInput}&client_id=W-eoqfsZIswq9IqRmejTwlxRxPojOI3knBLY6V5RA4I`);
             })
             .then(function(response) {
-                $scope.photoUrl = response.data.urls.regular;
+                $scope.photoUrl = response.data.urls.raw;
             })
             .catch(function(error) {
                 $scope.error = 'Error fetching data. Please try again.';
